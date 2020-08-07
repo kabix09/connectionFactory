@@ -60,6 +60,22 @@ class Connection{
                 break;
             }
         }
+
+        /**
+         * foreach (self::PDOdrivers as $driver){
+         * if($driver === self::$data['driver']){
+         *      try{
+         *          self::$instance->setConnection(self::$instance->factory(new ($driver . 'Factory')()));
+         *      }catch(\Throwable $e)
+         *      {
+         *          error_log($e->getMessage());
+         *      }catch(\Exception $e){
+         *          error_log($e->getMessage());
+         *      }
+         *  }
+         * }
+         * return FALSE;
+         */
     }
 
     private function factory(PDOfactory $PDOfactory){
