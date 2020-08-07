@@ -8,8 +8,8 @@ $odbcConfig = [
     'Driver'    => '{SQL Server}',
     'Server'    => 'localhost', //localhost
     'Database'  => 'myDB',
-    'user'      => 'user',
-    'password'  => 'user',
+    'user'      => 'root',
+    'password'  => '',
     'errmode'   => PDO::ERRMODE_EXCEPTION
 ];
     /* connection using mysql */
@@ -27,7 +27,7 @@ $conn = Connection::init($odbcConfig);
 $conn::PDOconnect();
 
     // execute simple query
-$q = $conn::$conn->query('SELECT * FROM "User"');
+$q = $conn->getConnection()->query('SELECT * FROM "User"');
 write($q->fetch(PDO::FETCH_ASSOC));
 
 

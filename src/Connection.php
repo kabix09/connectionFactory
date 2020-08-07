@@ -7,8 +7,8 @@ use App\AbstractFactory\sqliteFactory;
 use \PDO;
 
 class Connection{
-    const PDOdrivers = ['odbc', 'mysql'];
-    public static $conn;
+    const PDOdrivers = ['odbc'=>'odbc', 'mysql' =>'mysql'];
+    private static $connection;
     private static $instance;
     private static $data = array();
 
@@ -37,7 +37,6 @@ class Connection{
     }
 
     protected function checkDriver(string $driver){
-
         foreach (PDO::getAvailableDrivers() as $allowedDriver)
             if($allowedDriver === $driver)
                 return TRUE;
@@ -48,12 +47,12 @@ class Connection{
     public static function PDOconnect(){
         switch (self::$data['driver'])
         {
-            case self::PDOdrivers[0]: {
-                self::$conn = self::$instance->factory(new odbcFactory());
+            case self::PDOdrivers['odbc']: {
+                self::$instance->setConnection(self::$instance->factory(new odbcFactory()));
                 break;
             }
-            case self::PDOdrivers[1]: {
-                self::$conn = self::$instance->factory(new mysqlFactory());
+            case self::PDOdrivers['mysql']: {
+                self::$instance->setConnection(self::$instance->factory(new mysqlFactory()));
                 break;
             }
             default: {
@@ -65,5 +64,13 @@ class Connection{
 
     private function factory(PDOfactory $PDOfactory){
         return $PDOfactory->connect(self::$data);
+    }
+
+    private function setConnection(\PDO $connection){
+        self::$connection = $connection;
+    }
+
+    public function getConnection(): \PDO{
+        return self::$connection;
     }
 }
