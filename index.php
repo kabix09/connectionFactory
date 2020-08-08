@@ -23,8 +23,8 @@ $mysqlConfig = [
 ];
 
     /* connect */
-$conn = Connection::init($odbcConfig);
-$conn::PDOconnect();
+$conn = new Connection($odbcConfig);
+$conn->connect();
 
     // execute simple query
 $q = $conn->getConnection()->query('SELECT * FROM "User"');

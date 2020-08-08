@@ -1,16 +1,12 @@
 <?php declare(strict_types = 1);
 namespace App;
-use App\AbstractFactory\mysqlFactory;
-use App\AbstractFactory\odbcFactory;
-use App\AbstractFactory\PDOfactory;
-use App\AbstractFactory\sqliteFactory;
+use App\AbstractFactory\ {mysqlFactory, odbcFactory, PDOfactory, sqliteFactory};
 use \PDO;
 
 class Connection{
     const PDOdrivers = ['odbc'=>'odbc', 'mysql' =>'mysql'];
-    private static $connection;
-    private static $instance;
-    private static $data = array();
+    private $connection;
+    private $data = array();
 
     public function __construct(array $data)
     {
@@ -26,14 +22,46 @@ class Connection{
         $this->setData($data);
     }
 
-    public static function init(array $data){
-        if(self::$instance === NULL)
-            self::$instance = new Connection($data);
-        return self::$instance;
+    public function connect(){
+        $this->setConnection(
+            $this->makePDO()
+        );
     }
 
-    public function setData(array $data){
-        self::$data = $data;
+    private function makePDO(): ?\PDO {
+        switch ($this->data['driver'])
+        {
+            case self::PDOdrivers['odbc']: {
+                return $this->factory(new odbcFactory());
+            }
+            case self::PDOdrivers['mysql']: {
+                return $this->factory(new mysqlFactory());
+            }
+            default: {
+                throw new \RuntimeException("unrecognized PDO driver: this class don't support '". $this->data['driver'] . "'" . PHP_EOL);
+                break;
+            }
+        }
+        return NULL;
+        /**
+         * foreach (self::PDOdrivers as $driver){
+         * if($driver === $this->data['driver']){
+         *      try{
+         *          return $this->factory(new ($driver . 'Factory')());
+         *      }catch(\Throwable $e)
+         *      {
+         *          error_log($e->getMessage());
+         *      }catch(\Exception $e){
+         *          error_log($e->getMessage());
+         *      }
+         *  }
+         * }
+         * return NULL;
+         */
+    }
+
+    private function factory(PDOfactory $PDOfactory){
+        return $PDOfactory->connect($this->data);
     }
 
     protected function checkDriver(string $driver){
@@ -44,49 +72,19 @@ class Connection{
         return FALSE;
     }
 
-    public static function PDOconnect(){
-        switch (self::$data['driver'])
-        {
-            case self::PDOdrivers['odbc']: {
-                self::$instance->setConnection(self::$instance->factory(new odbcFactory()));
-                break;
-            }
-            case self::PDOdrivers['mysql']: {
-                self::$instance->setConnection(self::$instance->factory(new mysqlFactory()));
-                break;
-            }
-            default: {
-                throw new \RuntimeException("unrecognized PDO driver: this class don't support '". self::$data['driver'] . "'" . PHP_EOL);
-                break;
-            }
-        }
-
-        /**
-         * foreach (self::PDOdrivers as $driver){
-         * if($driver === self::$data['driver']){
-         *      try{
-         *          self::$instance->setConnection(self::$instance->factory(new ($driver . 'Factory')()));
-         *      }catch(\Throwable $e)
-         *      {
-         *          error_log($e->getMessage());
-         *      }catch(\Exception $e){
-         *          error_log($e->getMessage());
-         *      }
-         *  }
-         * }
-         * return FALSE;
-         */
+    public function setData(array $data){
+        $this->data = $data;
     }
 
-    private function factory(PDOfactory $PDOfactory){
-        return $PDOfactory->connect(self::$data);
+    public function getDara():array{
+        return $this->data;
     }
 
     private function setConnection(\PDO $connection){
-        self::$connection = $connection;
+        $this->connection = $connection;
     }
 
     public function getConnection(): \PDO{
-        return self::$connection;
+        return $this->connection;
     }
 }
