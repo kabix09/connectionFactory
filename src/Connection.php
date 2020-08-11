@@ -23,9 +23,15 @@ class Connection{
     }
 
     public function connect(){
-        $this->setConnection(
-            $this->makePDO()
-        );
+        $pdoInstance = $this->makePDO();
+
+        if(is_null($pdoInstance))
+        {
+            throw new \RuntimeException("unrecognized PDO driver: this class don't support '". $this->data['driver'] . "'" . PHP_EOL);
+        }else{
+            $this->setConnection($pdoInstance);
+        }
+
     }
 
     private function makePDO(): ?\PDO {
@@ -38,11 +44,9 @@ class Connection{
                 return $this->factory(new mysqlFactory());
             }
             default: {
-                throw new \RuntimeException("unrecognized PDO driver: this class don't support '". $this->data['driver'] . "'" . PHP_EOL);
-                break;
+                return NULL;
             }
         }
-        return NULL;
         /**
          * foreach (self::PDOdrivers as $driver){
          * if($driver === $this->data['driver']){
