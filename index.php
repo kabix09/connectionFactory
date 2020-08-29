@@ -16,10 +16,11 @@ $odbcConfig = [
 $mysqlConfig = [
     'driver' => 'mysql',
     'host' => 'localhost',
-    'dbname' => 'myDB',
+    'dbname' => 'test',
     'charset' => 'utf8',
     'user' => 'root',
-    'pass' => ''
+    'password' => '',
+    "options" => array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING)
 ];
 
     /* connect */
@@ -27,9 +28,9 @@ $conn = new Connection($odbcConfig);
 $conn->connect();
 
     // execute simple query
-$q = $conn->getConnection()->query('SELECT * FROM "User"');
-write($q->fetch(PDO::FETCH_ASSOC));
+$q = $conn->getConnection()->query('SELECT * FROM User');
 
+write($q->fetch(PDO::FETCH_ASSOC));
 
 function write($data){
     print_r('<pre>');

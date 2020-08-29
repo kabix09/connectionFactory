@@ -1,6 +1,5 @@
 <?php declare(strict_types = 1);
 namespace App\AbstractFactory;
-
 use PDO;
 
 class odbcFactory extends PDOfactory
@@ -18,9 +17,13 @@ class odbcFactory extends PDOfactory
         try{
             return new PDO($dns,
                             $connectData['user'], $connectData['password'],
-                            $connectData['errmode'] ? [PDO::ATTR_ERRMODE => $connectData['errmode']] :  NULL);
-        }catch (\PDOException $e){
+                            $connectData['errmode'] ? array(PDO::ATTR_ERRMODE => $connectData['errmode']):  NULL);
+        }catch (PDOException $e){
             error_log($e->getMessage());
+            throw new \RuntimeException("unable to connect: ".$e->getMessage());
+        }catch (\Throwable $e){
+            error_log($e->getMessage());
+            throw new \RuntimeException("unable to connect: ".$e->getMessage());
         }
     }
 }

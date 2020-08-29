@@ -16,10 +16,14 @@ class mysqlFactory extends  PDOfactory {
 
         try{
             return new PDO($dns,
-                $connectData['user'], $connectData['password'],
-                $connectData['options'] ? $connectData['options'] :  NULL);
+                            $connectData['user'], $connectData['password'],
+                            $connectData['options'] ??  NULL);
         }catch (\PDOException $e){
             error_log($e->getMessage());
+            throw new \RuntimeException("unable to connect: ".$e->getMessage());
+        }catch(\Throwable $e){
+            error_log($e->getMessage());
+            throw new \RuntimeException("unable to connect: ".$e->getMessage());
         }
     }
 }
