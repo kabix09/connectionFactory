@@ -5,32 +5,23 @@ use \PDO;
 
 class Connection{
     const PDOdrivers = ['odbc'=>'odbc', 'mysql' =>'mysql'];
+
     private $connection;
     private $data = array();
 
     public function __construct(array $data)
     {
-        if (count($data) < 5)
-            throw new \RuntimeException("invalid arguments: incorrect number of parameters" . PHP_EOL);
-
-        if (!isset($data['driver']))
-            throw new \RuntimeException("invalid arguments: driver wasn't indicated" . PHP_EOL);
-
-        if (!$this->checkDriver($data['driver']))
-            throw new \RuntimeException("unrecognized PDO driver: your server don't support '" . $data['driver'] . "' driver extension" . PHP_EOL);
-
-        $this->setData($data);
+        if($this->validData($data))
+            $this->setData($data);
     }
 
-    public function connect(){
+    public function connect(): void{
         $pdoInstance = $this->makePDO();
 
         if(is_null($pdoInstance))
         {
             throw new \RuntimeException("unrecognized PDO driver: this class don't support '". $this->data['driver'] . "'" . PHP_EOL);
-        }else{
-            $this->setConnection($pdoInstance);
-        }
+        }else { $this->setConnection($pdoInstance); }
 
     }
 
@@ -65,10 +56,15 @@ class Connection{
     }
 
     private function factory(PDOfactory $PDOfactory){
-        return $PDOfactory->connect($this->data);
+        $pdo =  $PDOfactory->connect($this->data);
+
+        if(is_null($pdo))
+            throw new \PDOException("unable to connect with database :/");
+
+        return $pdo;
     }
 
-    protected function checkDriver(string $driver){
+    protected function checkDriver(string $driver): bool{
         foreach (PDO::getAvailableDrivers() as $allowedDriver)
             if($allowedDriver === $driver)
                 return TRUE;
@@ -76,7 +72,20 @@ class Connection{
         return FALSE;
     }
 
-    public function setData(array $data){
+    private function validData(array $data) : bool{
+        if (count($data) < 5)
+            throw new \RuntimeException("invalid arguments: incorrect number of parameters" . PHP_EOL);
+
+        if (!isset($data['driver']))
+            throw new \RuntimeException("invalid arguments: driver wasn't indicated" . PHP_EOL);
+
+        if (!$this->checkDriver($data['driver']))
+            throw new \RuntimeException("unrecognized PDO driver: your server don't support '" . $data['driver'] . "' driver extension" . PHP_EOL);
+
+        return TRUE;
+    }
+
+    public function setData(array $data): void{
         $this->data = $data;
     }
 
@@ -84,7 +93,7 @@ class Connection{
         return $this->data;
     }
 
-    private function setConnection(\PDO $connection){
+    private function setConnection(\PDO $connection): void{
         $this->connection = $connection;
     }
 

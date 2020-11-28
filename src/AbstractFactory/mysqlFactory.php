@@ -12,7 +12,6 @@ class mysqlFactory extends  PDOfactory {
                                 array_splice($connectData, 0, 3),
                                 ["charset" => $connectData['charset'] ?? "utf8"])
                             );
-    var_dump($dns);
 
         try{
             return new PDO($dns,

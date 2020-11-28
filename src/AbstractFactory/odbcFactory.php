@@ -12,13 +12,12 @@ class odbcFactory extends PDOfactory
                                 array_splice($connectData, 0, 4),
                                 ["charset" => $connectData['charset'] ?? "UTF8"])
                             );
-    var_dump($dns);
 
         try{
             return new PDO($dns,
                             $connectData['user'], $connectData['password'],
                             $connectData['errmode'] ? array(PDO::ATTR_ERRMODE => $connectData['errmode']):  NULL);
-        }catch (PDOException $e){
+        }catch (\PDOException $e){
             error_log($e->getMessage());
             throw new \RuntimeException("unable to connect: ".$e->getMessage());
         }catch (\Throwable $e){

@@ -6,8 +6,8 @@ use App\Connection;
 $odbcConfig = [
     'driver'    => 'odbc',
     'Driver'    => '{SQL Server}',
-    'Server'    => 'localhost', //localhost
-    'Database'  => 'myDB',
+    'Server'    => 'localhost',
+    'Database'  => 'test',
     'user'      => 'root',
     'password'  => '',
     'errmode'   => PDO::ERRMODE_EXCEPTION
