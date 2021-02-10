@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 namespace App\AbstractFactory;
 
-class sqliteFactory extends PDOfactory
+class SQLiteFactory extends PDOFactory
 {
-    public function connect(array $connectData)
+    protected function makeConnection(array $connectData)
     {
-        // TODO: Implement connect() method.
+        // TODO: Implement makeConnection() method.
     }
 }

@@ -5,8 +5,26 @@ abstract class PDOFactory
 {
     protected const DATA_KEYS = []; // php -S localhost:8000
 
-    abstract public function connect(array $connectData);
+    public function connect(array $connectData)
+    {
+        try
+        {
+            $this->makeConnection($connectData);
+        } catch (\InvalidArgumentException $e) {
 
+            var_dump($e->getMessage());
+        } catch (\PDOException $e) {
+
+            var_dump("unable to connect: " . $e->getMessage());
+            error_log("unable to connect: " . $e->getMessage());    // save in default php log file
+        } catch(\Throwable $e) {
+
+            var_dump("unable to connect: " . $e->getMessage());
+            error_log("unable to connect: " . $e->getMessage());    // save in default php log file
+        }
+    }
+
+    abstract protected function makeConnection(array $connectData);
     public function makeDns(array $dnsData): string
     {
         $dnsData = $this->validDnsData($dnsData);
