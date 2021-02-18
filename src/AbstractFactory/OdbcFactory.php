@@ -1,6 +1,7 @@
 <?php declare(strict_types = 1);
 namespace App\AbstractFactory;
 
+use App\DnsParameters;
 use PDO;
 
 class OdbcFactory extends PDOFactory
@@ -10,10 +11,10 @@ class OdbcFactory extends PDOFactory
     protected function makeConnection(array $connectData)
     {
         /* [$connectData['driver'], "Driver" => $connectData['Driver'], "Server" => $connectData['Server'], "Database" => $connectData['Database'], "charset" => $connectData['charset'] ?? "UTF8" ] */
+        $dnsParam = new DnsParameters($connectData, self::DATA_KEYS);
 
-        $dns = $this->makeDns(array_merge(
-                array_splice($connectData, 0, 4),
-                ["charset" => $connectData['charset'] ?? "UTF8"])
+        $dns = $this->makeDns(
+            $dnsParam->generate()
         );
 
         return new PDO($dns, $connectData['user'], $connectData['password'],

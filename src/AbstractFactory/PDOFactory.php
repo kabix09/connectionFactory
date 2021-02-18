@@ -9,29 +9,25 @@ abstract class PDOFactory
     {
         try
         {
-            $this->makeConnection($connectData);
+            return $this->makeConnection($connectData);
         } catch (\InvalidArgumentException $e) {
 
             var_dump($e->getMessage());
         } catch (\PDOException $e) {
 
-            var_dump("unable to connect: " . $e->getMessage());
-            error_log("unable to connect: " . $e->getMessage());    // save in default php log file
+            error_log("Connection error: " . $e->getMessage());
         } catch(\Throwable $e) {
 
-            var_dump("unable to connect: " . $e->getMessage());
-            error_log("unable to connect: " . $e->getMessage());    // save in default php log file
+            error_log("Unable to connect: " . $e->getMessage());
+        } finally {
+            error_log("Unexpected error " . $e->getMessage());
         }
     }
 
     abstract protected function makeConnection(array $connectData);
+
     public function makeDns(array $dnsData): string
     {
-        $dnsData = $this->validDnsData($dnsData);
-
-        if(!$this->checkDnsData($dnsData))
-            throw new \InvalidArgumentException('Invalid DNS array data argument');
-
         $dns = $dnsData['driver'] . ':';
         unset($dnsData['driver']);
 
@@ -39,26 +35,5 @@ abstract class PDOFactory
             $dns .= $key . '=' . $value . ';';
         }
         return substr($dns, 0, -1);
-    }
-
-    private function validDnsData(array $data) : array
-    {
-        $validData = [];
-
-        foreach (static::DATA_KEYS as $key) {
-            $validData[$key] = array_key_exists($key, $data) ? $data[$key] : null;
-        }
-
-        return $validData;
-    }
-
-    private function checkDnsData(array $data) : bool
-    {
-        foreach (static::DATA_KEYS as $key) {
-            if(is_null($data[$key]))
-                return false;
-        }
-
-        return true;
     }
 }
