@@ -1,6 +1,8 @@
 <?php declare(strict_types = 1);
 namespace App\AbstractFactory;
 
+use App\DnsParamsValidator;
+
 abstract class PDOFactory
 {
     protected const DATA_KEYS = []; // php -S localhost:8000
@@ -9,7 +11,9 @@ abstract class PDOFactory
     {
         try
         {
-            return $this->makeConnection($connectData);
+            $dnsParam = new DnsParamsValidator($connectData, static::DATA_KEYS);
+
+            return $this->makeConnection($dnsParam->generate());
         } catch (\InvalidArgumentException $e) {
 
             var_dump($e->getMessage());

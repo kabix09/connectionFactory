@@ -2,7 +2,7 @@
 
 namespace App;
 
-class DnsParameters
+class DnsParamsValidator
 {
     private array $connectionData = [];
     private int $finalIndex = 0;
