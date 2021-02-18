@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 namespace App;
-use App\AbstractFactory\ {mysqlFactory, odbcFactory, PDOfactory, sqliteFactory};
+use App\AbstractFactory\ {MySqlFactory, OdbcFactory, PDOFactory, SQLiteFactory};
 use \PDO;
 
 class Connection{
@@ -29,10 +29,10 @@ class Connection{
         switch ($this->data['driver'])
         {
             case self::PDOdrivers['odbc']: {
-                return $this->factory(new odbcFactory());
+                return $this->factory(new OdbcFactory());
             }
             case self::PDOdrivers['mysql']: {
-                return $this->factory(new mysqlFactory());
+                return $this->factory(new MySqlFactory());
             }
             default: {
                 return NULL;
@@ -55,7 +55,7 @@ class Connection{
          */
     }
 
-    private function factory(PDOfactory $PDOfactory){
+    private function factory(PDOFactory $PDOfactory){
         $pdo =  $PDOfactory->connect($this->data);
 
         if(is_null($pdo))
@@ -89,7 +89,7 @@ class Connection{
         $this->data = $data;
     }
 
-    public function getDara():array{
+    public function getData():array{
         return $this->data;
     }
 
