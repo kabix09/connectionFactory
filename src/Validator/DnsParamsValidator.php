@@ -1,23 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace App;
+namespace App\Validator;
 
 class DnsParamsValidator
 {
-    private array $connectionData = [];
     private int $finalIndex = 0;
     private array $dataKeys = [];
 
-    public function __construct(array $connectionData, $dataKeys)
+    public function __construct($dataKeys)
     {
-        $this->connectionData = $connectionData;
         $this->dataKeys = $dataKeys;
         $this->finalIndex = count($this->dataKeys);
     }
 
-    public function generate(): array
+    public function validate(array $dataToValid): array
     {
-        $array = $this->buildParametersArray();
+        $array = $this->buildParametersArray($dataToValid);
 
         $dnsData = $this->validDnsData($array);
 
@@ -27,10 +25,10 @@ class DnsParamsValidator
         return $dnsData;
     }
 
-    private function buildParametersArray() : array
+    private function buildParametersArray(array $connectionData) : array
     {
         return array_merge(
-                array_splice($this->connectionData, 0, $this->finalIndex),
+                array_splice($connectionData, 0, $this->finalIndex),
                 [
                     "charset" => $connectData['charset'] ?? "utf8"
                 ]

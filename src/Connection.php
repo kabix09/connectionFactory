@@ -1,96 +1,56 @@
 <?php declare(strict_types = 1);
 namespace App;
+use App\Validator\ConnectionDriverValidator;
 use App\AbstractFactory\ {MySqlFactory, OdbcFactory, PDOFactory, SQLiteFactory};
 use \PDO;
 
 class Connection{
-    const PDOdrivers = ['odbc'=>'odbc', 'mysql' =>'mysql'];
+    const PDO_DRIVERS = ['odbc'=>'Odbc', 'mysql' =>'MySql'];
 
-    private $connection;
-    private $data = array();
+    private \PDO $connection;
+    private array $data = [];
 
     public function __construct(array $data)
     {
-        if($this->validData($data))
-            $this->setData($data);
-    }
-
-    public function connect(): void{
-        $pdoInstance = $this->makePDO();
-
-        if(is_null($pdoInstance))
-        {
-            throw new \RuntimeException("unrecognized PDO driver: this class don't support '". $this->data['driver'] . "'" . PHP_EOL);
-        }else { $this->setConnection($pdoInstance); }
-
-    }
-
-    private function makePDO(): ?\PDO {
-        switch ($this->data['driver'])
-        {
-            case self::PDOdrivers['odbc']: {
-                return $this->factory(new OdbcFactory());
-            }
-            case self::PDOdrivers['mysql']: {
-                return $this->factory(new MySqlFactory());
-            }
-            default: {
-                return NULL;
-            }
-        }
-        /**
-         * foreach (self::PDOdrivers as $driver){
-         * if($driver === $this->data['driver']){
-         *      try{
-         *          return $this->factory(new ($driver . 'Factory')());
-         *      }catch(\Throwable $e)
-         *      {
-         *          error_log($e->getMessage());
-         *      }catch(\Exception $e){
-         *          error_log($e->getMessage());
-         *      }
-         *  }
-         * }
-         * return NULL;
-         */
-    }
-
-    private function factory(PDOFactory $PDOfactory){
-        $pdo =  $PDOfactory->connect($this->data);
-
-        if(is_null($pdo))
-            throw new \PDOException("unable to connect with database :/");
-
-        return $pdo;
-    }
-
-    protected function checkDriver(string $driver): bool{
-        foreach (PDO::getAvailableDrivers() as $allowedDriver)
-            if($allowedDriver === $driver)
-                return TRUE;
-
-        return FALSE;
-    }
-
-    private function validData(array $data) : bool{
-        if (count($data) < 5)
-            throw new \RuntimeException("invalid arguments: incorrect number of parameters" . PHP_EOL);
-
-        if (!isset($data['driver']))
-            throw new \RuntimeException("invalid arguments: driver wasn't indicated" . PHP_EOL);
-
-        if (!$this->checkDriver($data['driver']))
-            throw new \RuntimeException("unrecognized PDO driver: your server don't support '" . $data['driver'] . "' driver extension" . PHP_EOL);
-
-        return TRUE;
-    }
-
-    public function setData(array $data): void{
         $this->data = $data;
     }
 
-    public function getData():array{
-        return $this->data;
+    public function connect(): bool {
+        try {
+            // valid driver data
+            $driverValidator = new ConnectionDriverValidator();
+            $this->data = $driverValidator->validate($this->data);
+
+            // create pdo instance
+            $pdoInstance = $this->makePDO();
+
+            if(is_null($pdoInstance))
+            {
+                throw new \RuntimeException("The factory has failed. Unexpected error - Object could not be created" . PHP_EOL);
+            }else { $this->setConnection($pdoInstance); }
+        }catch (\Exception $e){
+            var_dump($e);
+            error_log($e->getMessage());
+        }
+
+        return true;
+    }
+
+    private function makePDO(): ?\PDO {
+         foreach (self::PDO_DRIVERS as $driver)
+             if($driver === $this->data['driver'])
+                 return $this->factory(new ($driver . 'Factory')());
+
+         return null;
+    }
+
+    private function factory(PDOFactory $PDOfactory){
+        $pdo = $PDOfactory->connect($this->data);
+
+        if(is_null($pdo))
+            throw new \RuntimeException("The factory has failed. Unexpected error - PDO instance could not be created" . PHP_EOL);
+
+        return $pdo;
     }
 
     private function setConnection(\PDO $connection): void{

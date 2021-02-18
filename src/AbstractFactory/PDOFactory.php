@@ -1,36 +1,22 @@
 <?php declare(strict_types = 1);
 namespace App\AbstractFactory;
 
-use App\DnsParamsValidator;
+use App\Validator\DnsParamsValidator;
 
 abstract class PDOFactory
 {
     protected const DATA_KEYS = []; // php -S localhost:8000
 
-    public function connect(array $connectData)
+    public function connect(array $connectData): ?\PDO
     {
-        try
-        {
-            $dnsParam = new DnsParamsValidator($connectData, static::DATA_KEYS);
+        $dnsParam = new DnsParamsValidator(static::DATA_KEYS);
 
-            return $this->makeConnection($dnsParam->generate());
-        } catch (\InvalidArgumentException $e) {
-
-            var_dump($e->getMessage());
-        } catch (\PDOException $e) {
-
-            error_log("Connection error: " . $e->getMessage());
-        } catch(\Throwable $e) {
-
-            error_log("Unable to connect: " . $e->getMessage());
-        } finally {
-            error_log("Unexpected error " . $e->getMessage());
-        }
+        return $this->makeConnection($dnsParam->validate($connectData));
     }
 
     abstract protected function makeConnection(array $connectData);
 
-    public function makeDns(array $dnsData): string
+    protected function makeDns(array $dnsData): string
     {
         $dns = $dnsData['driver'] . ':';
         unset($dnsData['driver']);
