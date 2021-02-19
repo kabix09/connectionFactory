@@ -29,7 +29,9 @@ class Connection{
                 throw new \RuntimeException("The factory has failed. Unexpected error - Object could not be created" . PHP_EOL);
             }else { $this->setConnection($pdoInstance); }
         }catch (\Exception $e){
-            var_dump($e);
+            print_r('<pre>');
+                var_dump($e);
+            print_r('</pre>');
             error_log($e->getMessage());
         }
 
@@ -37,10 +39,13 @@ class Connection{
     }
 
     private function makePDO(): ?\PDO {
-         foreach (self::PDO_DRIVERS as $driver)
-             if($driver === $this->data['driver'])
-                 return $this->factory(new ($driver . 'Factory')());
-
+         foreach (self::PDO_DRIVERS as $key => $driver) {
+             if ($key === $this->data['driver'])
+             {
+                 $factory = "App\AbstractFactory\\" . $driver . 'Factory';
+                 return $this->factory(new $factory());
+             }
+         }
          return null;
     }
 

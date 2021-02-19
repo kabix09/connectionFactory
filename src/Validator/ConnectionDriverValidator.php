@@ -2,6 +2,8 @@
 
 namespace App\Validator;
 
+use \PDO;
+
 class ConnectionDriverValidator implements Validator
 {
     public function validate(array $dataToValid): array
@@ -24,7 +26,7 @@ class ConnectionDriverValidator implements Validator
     }
 
     private function checkDriver(string $driver): bool{
-        foreach (PDO::getAvailableDrivers() as $allowedDriver)
+        foreach (\PDO::getAvailableDrivers() as $allowedDriver)
             if($allowedDriver === $driver)
                 return TRUE;
 
