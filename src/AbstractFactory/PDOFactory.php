@@ -7,14 +7,18 @@ abstract class PDOFactory
 {
     protected const DATA_KEYS = []; // php -S localhost:8000
 
-    public function connect(array $connectData): ?\PDO
+    public function connect(array $connectData): \PDO
     {
         $dnsParam = new DnsParamsValidator(static::DATA_KEYS);
 
-        return $this->makeConnection($dnsParam->validate($connectData));
-    }
+        $dns = $this->makeDns($dnsParam->validate($connectData));
 
-    abstract protected function makeConnection(array $connectData);
+        return
+            new \PDO($dns,
+                    $connectData['user'],
+                    $connectData['password'],
+                    $connectData['options']);
+    }
 
     protected function makeDns(array $dnsData): string
     {

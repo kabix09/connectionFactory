@@ -3,8 +3,5 @@ namespace App\AbstractFactory;
 
 class SQLiteFactory extends PDOFactory
 {
-    protected function makeConnection(array $connectData)
-    {
-        // TODO: Implement makeConnection() method.
-    }
+    protected const DATA_KEYS = [];
 }
