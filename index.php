@@ -2,29 +2,12 @@
 require_once realpath("vendor/autoload.php");
 use App\Connection;
 
-    /* connection using odbc */
-$odbcConfig = [
-    'driver'    => 'odbc',
-    'Driver'    => '{SQL Server}',
-    'Server'    => 'localhost',
-    'Database'  => 'test',
-    'user'      => 'root',
-    'password'  => '',
-    'errmode'   => PDO::ERRMODE_EXCEPTION
-];
-    /* connection using mysql */
-$mysqlConfig = [
-    'driver' => 'mysql',
-    'host' => 'localhost',
-    'dbname' => 'test',
-    'charset' => 'utf8',
-    'user' => 'root',
-    'password' => '',
-    "options" => array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING)
-];
+define('MY_DB_DRIVERS', ['odbc', 'mysql']);
+
+$configs = parse_ini_file('./src/database.ini', true);
 
     /* connect */
-$conn = new Connection($odbcConfig);
+$conn = new Connection($configs[MY_DB_DRIVERS[1].'Config']);
 $conn->connect();
 
     // execute simple query
