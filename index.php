@@ -1,5 +1,5 @@
 <?php
-require_once realpath("vendor/autoload.php");
+require_once "vendor/autoload.php";
 use App\Connection;
 use App\Validator\ConnectionDriverValidator;
 
@@ -16,6 +16,7 @@ $q = $conn->getConnection()->query('SELECT * FROM User');
 
 write($q->fetch(PDO::FETCH_ASSOC));
 
+// --------------------------------------------------------------------------
 function write($data){
     print_r('<pre>');
         var_dump($data);

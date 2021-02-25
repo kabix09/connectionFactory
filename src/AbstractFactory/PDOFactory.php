@@ -16,12 +16,13 @@ abstract class PDOFactory
     public function connect(array $connectData): \PDO
     {
         $dns = $this->makeDns($this->dnsParamValid->validate($connectData));
+        $options = $this->buildOptions($connectData['options']);
 
         return
             new \PDO($dns,
                     $connectData['user'],
                     $connectData['password'],
-                    $connectData['options']);
+                    $options);
     }
 
     protected function makeDns(array $dnsData): string
@@ -33,5 +34,17 @@ abstract class PDOFactory
             $dns .= $key . '=' . $value . ';';
         }
         return substr($dns, 0, -1);
+    }
+
+    private function buildOptions(array $options): array
+    {
+        $evaluatedOptions = [];
+
+        foreach ($options as $key => $value)
+        {
+            eval("\$evKey = $key; \$evValue = $value; \$evaluatedOptions[\$evKey] = \$evValue;");
+        }
+
+        return $evaluatedOptions;
     }
 }

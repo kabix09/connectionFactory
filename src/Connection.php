@@ -1,16 +1,15 @@
 <?php declare(strict_types = 1);
 namespace App;
 
-use App\Validator\BaseValidator;
 use App\Validator\Validator;
 use App\AbstractFactory\ {MySqlFactory, OdbcFactory, PDOFactory, SQLiteFactory};
-use \PDO;
+use PDO;
 
 final class Connection{
-    const PDO_DRIVERS = ['odbc'=>'Odbc', 'mysql' =>'MySql'];
+    private const PDO_DRIVERS = ['odbc'=>'Odbc', 'mysql' =>'MySql'];
 
-    private \PDO $connection;
-    private array $data = [];
+    private PDO $connection;
+    private array $data;
 
     public function __construct(array $data)    // todo - pass logger as 2'nd parameter
     {
@@ -28,7 +27,9 @@ final class Connection{
             if(is_null($pdoInstance))
             {
                 throw new \RuntimeException("The factory has failed. Unexpected error - Object could not be created" . PHP_EOL);
-            }else { $this->setConnection($pdoInstance); }
+            }
+
+            $this->setConnection($pdoInstance);
         }catch (\Exception $e){
             print_r('<pre>');
                 var_dump($e);
@@ -39,7 +40,7 @@ final class Connection{
         return true;
     }
 
-    private function makePDO(): ?\PDO {
+    private function makePDO(): ?PDO {
          foreach (self::PDO_DRIVERS as $key => $driver) {
              if ($key === $this->data['driver'])
              {
@@ -50,20 +51,21 @@ final class Connection{
          return null;
     }
 
-    private function factory(PDOFactory $PDOfactory){
+    private function factory(PDOFactory $PDOfactory): PDO
+    {
         $pdo = $PDOfactory->connect($this->data);
 
-        if(is_null($pdo))
+        if(is_null($pdo)) {
             throw new \RuntimeException("The factory has failed. Unexpected error - PDO instance could not be created" . PHP_EOL);
-
+        }
         return $pdo;
     }
 
-    private function setConnection(\PDO $connection): void{
+    private function setConnection(PDO $connection): void{
         $this->connection = $connection;
     }
 
-    public function getConnection(): \PDO{
+    public function getConnection(): PDO{
         return $this->connection;
     }
 }

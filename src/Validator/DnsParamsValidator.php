@@ -4,8 +4,8 @@ namespace App\Validator;
 
 final class DnsParamsValidator implements Validator
 {
-    private int $finalIndex = 0;
-    private array $dataKeys = [];
+    private int $finalIndex;
+    private array $dataKeys;
 
     public function __construct(array $options = [])
     {
@@ -19,9 +19,9 @@ final class DnsParamsValidator implements Validator
 
         $dnsData = $this->validDnsData($array);
 
-        if(!$this->checkDnsData($dnsData))
+        if(!$this->checkDnsData($dnsData)) {
             throw new \InvalidArgumentException('Invalid DNS array data argument');
-
+        }
         return $dnsData;
     }
 
@@ -35,24 +35,25 @@ final class DnsParamsValidator implements Validator
             );
     }
 
-    private function validDnsData(array &$data) : array
+    private function validDnsData(array $data) : array
     {
         $validData = [];
 
         foreach ($this->dataKeys as $key) {
-            $validData[$key] = array_key_exists($key, $data) ? $data[$key] : null;
+            $validData[$key] = $data[$key] ?? null;
         }
 
         return $validData;
     }
 
-    private function checkDnsData(array &$data) : bool
+    private function checkDnsData(array $data) : bool
     {
         foreach ($this->dataKeys as $key) {
             if(is_null($data[$key]))
+            {
                 return false;
+            }
         }
-
         return true;
     }
 }
