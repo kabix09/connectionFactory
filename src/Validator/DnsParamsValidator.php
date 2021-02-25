@@ -2,14 +2,14 @@
 
 namespace App\Validator;
 
-class DnsParamsValidator
+final class DnsParamsValidator implements Validator
 {
     private int $finalIndex = 0;
     private array $dataKeys = [];
 
-    public function __construct($dataKeys)
+    public function __construct(array $options = [])
     {
-        $this->dataKeys = $dataKeys;
+        $this->dataKeys = array_key_exists('dataKeys', $options) ? $options['dataKeys'] : [];
         $this->finalIndex = count($this->dataKeys);
     }
 
@@ -55,5 +55,4 @@ class DnsParamsValidator
 
         return true;
     }
-
 }

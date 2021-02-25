@@ -1,24 +1,25 @@
 <?php declare(strict_types = 1);
 namespace App;
-use App\Validator\ConnectionDriverValidator;
+
+use App\Validator\BaseValidator;
+use App\Validator\Validator;
 use App\AbstractFactory\ {MySqlFactory, OdbcFactory, PDOFactory, SQLiteFactory};
 use \PDO;
 
-class Connection{
+final class Connection{
     const PDO_DRIVERS = ['odbc'=>'Odbc', 'mysql' =>'MySql'];
 
     private \PDO $connection;
     private array $data = [];
 
-    public function __construct(array $data)
+    public function __construct(array $data)    // todo - pass logger as 2'nd parameter
     {
         $this->data = $data;
     }
 
-    public function connect(): bool {
+    public function connect(Validator $driverValidator): bool {
         try {
             // valid driver data
-            $driverValidator = new ConnectionDriverValidator();
             $this->data = $driverValidator->validate($this->data);
 
             // create pdo instance
@@ -32,7 +33,7 @@ class Connection{
             print_r('<pre>');
                 var_dump($e);
             print_r('</pre>');
-            error_log($e->getMessage());
+            error_log($e->getMessage());    // todo - pass through logger
         }
 
         return true;
@@ -42,8 +43,8 @@ class Connection{
          foreach (self::PDO_DRIVERS as $key => $driver) {
              if ($key === $this->data['driver'])
              {
-                 $factory = "App\AbstractFactory\\" . $driver . 'Factory';
-                 return $this->factory(new $factory());
+                 $factoryName = "App\AbstractFactory\\" . $driver . 'Factory';
+                 return $this->factory(new $factoryName());
              }
          }
          return null;

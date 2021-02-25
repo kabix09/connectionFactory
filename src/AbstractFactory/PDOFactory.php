@@ -5,13 +5,17 @@ use App\Validator\DnsParamsValidator;
 
 abstract class PDOFactory
 {
-    protected const DATA_KEYS = []; // php -S localhost:8000
+    protected const DATA_KEYS = [];
+    private DnsParamsValidator $dnsParamValid;
+
+    public function __construct()
+    {
+        $this->dnsParamValid = new DnsParamsValidator(['dataKeys' => static::DATA_KEYS]);
+    }
 
     public function connect(array $connectData): \PDO
     {
-        $dnsParam = new DnsParamsValidator(static::DATA_KEYS);
-
-        $dns = $this->makeDns($dnsParam->validate($connectData));
+        $dns = $this->makeDns($this->dnsParamValid->validate($connectData));
 
         return
             new \PDO($dns,

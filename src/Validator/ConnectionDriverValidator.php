@@ -1,18 +1,19 @@
 <?php declare(strict_types=1);
-
 namespace App\Validator;
 
 use \PDO;
 
-class ConnectionDriverValidator implements Validator
+final class ConnectionDriverValidator implements Validator
 {
+    public function __construct(array $options = []) { }
+
     public function validate(array $dataToValid): array
     {
-        if($this->validData($dataToValid))
+        if($this->validDriverData($dataToValid))
             return $dataToValid;
     }
 
-    private function validData(array $data) : bool{
+    private function validDriverData(array $data) : bool{
         if (count($data) < 1)
             throw new \RuntimeException("Invalid arguments: incorrect number of parameters" . PHP_EOL);
 
@@ -22,14 +23,14 @@ class ConnectionDriverValidator implements Validator
         if (!$this->checkDriver($data['driver']))
             throw new \RuntimeException("Unrecognized PDO driver: your server don't support '" . $data['driver'] . "' driver extension" . PHP_EOL);
 
-        return TRUE;
+        return true;
     }
 
     private function checkDriver(string $driver): bool{
         foreach (\PDO::getAvailableDrivers() as $allowedDriver)
             if($allowedDriver === $driver)
-                return TRUE;
+                return true;
 
-        return FALSE;
+        return false;
     }
 }
