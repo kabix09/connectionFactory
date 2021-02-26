@@ -1,10 +1,30 @@
 {
-  "autoload": {
-    "psr-4": {
-      "App\\": "src/"
+    "name": "kabix09/connection-factory",
+    "description": "Base PDO connection generator using Abstract Factory pattern",
+    "keywords": ["Connection Factory", "Connection"],
+    "type": "library",
+    "version": "1.0.1-dev",
+    "authors": [
+        {
+            "name": "kabix09",
+            "email": "kabix.009@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ConnectionFactory\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "require": {
+        "ext-pdo": "*"
     }
-  },
-  "require": {
-    "ext-pdo": "*"
-  }
 }
+
+
+
+
