@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
-
-namespace App\Validator;
+namespace ConnectionFactory\Validator;
 
 final class DnsParamsValidator implements Validator
 {

@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
-namespace App;
+namespace ConnectionFactory;
 
-use App\Validator\Validator;
-use App\AbstractFactory\ {MySqlFactory, OdbcFactory, PDOFactory, SQLiteFactory};
+use ConnectionFactory\Validator\Validator;
+use ConnectionFactory\AbstractFactory\ {MySqlFactory, OdbcFactory, PDOFactory, SQLiteFactory};
 use PDO;
 
 final class Connection{
@@ -44,7 +44,7 @@ final class Connection{
          foreach (self::PDO_DRIVERS as $key => $driver) {
              if ($key === $this->data['driver'])
              {
-                 $factoryName = "App\AbstractFactory\\" . $driver . 'Factory';
+                 $factoryName = "ConnectionFactory\AbstractFactory\\" . $driver . 'Factory';
                  return $this->factory(new $factoryName());
              }
          }

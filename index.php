@@ -1,7 +1,7 @@
 <?php
 require_once "vendor/autoload.php";
-use App\Connection;
-use App\Validator\ConnectionDriverValidator;
+use ConnectionFactory\Connection;
+use ConnectionFactory\Validator\ConnectionDriverValidator;
 
 define('MY_DB_DRIVERS', ['odbc', 'mysql']);
 

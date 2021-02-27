@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
-namespace App\AbstractFactory;
+namespace ConnectionFactory\AbstractFactory;
 
-use App\Validator\DnsParamsValidator;
+use ConnectionFactory\Validator\DnsParamsValidator;
 
 abstract class PDOFactory
 {
